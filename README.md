@@ -15,5 +15,6 @@ api_yamdb
  - добавил приложение rest_framework в INSTALLED_APPS
  - подключил две библиотеки Djoser и Simple JWT pip install djoser djangorestframework-simplejwt==4.7.2
  - Обновил файл settings.py
- - В settings.py в настройках REST_FRAMEWORK объявил новый способ аутентификации TokenAuthentication
+ - В settings.py в настройках
+  REST_FRAMEWORK объявил новый способ аутентификации TokenAuthentication
 
