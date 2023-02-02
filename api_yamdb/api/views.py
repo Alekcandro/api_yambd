@@ -3,15 +3,21 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, filters
 from rest_framework.pagination import LimitOffsetPagination
 
-from reviews.models import Title, Genre
+from reviews.models import Title, Genre, Category
 from .filters import TitleFilter
 from .mixins import CreateListDestroyViewSet
 from .permissions import AdminOrReadOnly
-from .serializers import TitleSerializer, GetTitleSerializer, GenreSerializer
+from .serializers import (CategorySerializer, GetTitleSerializer,
+                          GenreSerializer, TitleSerializer)
 
 
 class CategoryViewSet(CreateListDestroyViewSet):
-    pass
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    pagination_class = LimitOffsetPagination
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('name',)
+    permission_classes = (AdminOrReadOnly,)
 
 
 class GenreViewSet(CreateListDestroyViewSet):
