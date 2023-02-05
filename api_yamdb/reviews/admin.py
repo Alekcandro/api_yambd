@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Category, Genre, Title
+from .models import Category, Genre, Comment, Title, GenreTitle, Review
 
 
 @admin.register(Category)
@@ -31,6 +31,17 @@ class GenreAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
 
 
+@admin.register(GenreTitle)
+class GenreTitle(admin.ModelAdmin):
+    """Вспомогательная таблица."""
+
+    list_display = (
+        'pk',
+        'title_id',
+        'genre_id'
+    )
+
+
 @admin.register(Title)
 class TitleAdmin(admin.ModelAdmin):
     """Настройка Произведений."""
@@ -43,3 +54,26 @@ class TitleAdmin(admin.ModelAdmin):
     )
     list_filter = ('name',)
     search_fields = ('name', 'year')
+
+
+@admin.register(Review)
+class ReviewAdmin(admin.ModelAdmin):
+    """Настройка Произведений."""
+
+    list_display = (
+        'title',
+        'author',
+        'text'
+    )
+
+
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    """Настройка Произведений."""
+
+    list_display = (
+        'review',
+        'author',
+        'text'
+    )
+
