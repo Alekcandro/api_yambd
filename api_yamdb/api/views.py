@@ -7,8 +7,8 @@ from reviews.models import Title, Genre, Category
 from .filters import TitleFilter
 from .mixins import CreateListDestroyViewSet
 from .permissions import AdminOrReadOnly
-from .serializers import (CategorySerializer, GetTitleSerializer,
-                          GenreSerializer, TitleSerializer)
+from .serializers import (CategorySerializer, GenreSerializer,
+                          TitleSerializer, ReadTitleSerializer)
 
 
 class CategoryViewSet(CreateListDestroyViewSet):
@@ -39,6 +39,6 @@ class TitleViewSet(viewsets.ModelViewSet):
     filterset_class = TitleFilter
 
     def get_serializer_class(self):
-        if self.action == 'get':
-            return GetTitleSerializer
+        if self.action in ('list', 'retrieve'):
+            return ReadTitleSerializer
         return TitleSerializer
