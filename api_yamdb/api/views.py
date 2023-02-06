@@ -4,24 +4,47 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.db.models import Avg
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.response import Response
-from rest_framework import filters, viewsets
+from rest_framework import filters, permissions, viewsets
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.decorators import  api_view
+from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import AccessToken
 from reviews.models import Category, Genre, Title
 
 from .filters import TitleFilter
 from .mixins import CreateListDestroyViewSet
-from .permissions import AdminOrReadOnly
+from .permissions import AdminOrReadOnly, IsAdmin
 from .serializers import (CategorySerializer, CreateUserSerializer,
                           GenreSerializer, ReadTitleSerializer,
-                          TitleSerializer)
+                          TitleSerializer, UserJWTTokenCreateSerializer,
+                          UsersSerializer)
 
 User = get_user_model()
 
+class UsersViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    permission_classes = [IsAdmin]
+    serializer_class = UsersSerializer
+    lookup_field = 'username'
+    pagination_class = LimitOffsetPagination
+
+    @action(methods=['patch', 'get'], detail=False,
+            permission_classes=[permissions.IsAuthenticated],
+            url_path='me', url_name='me')
+    def me(self, request, *args, **kwargs):
+        instance = self.request.user
+        serializer = self.get_serializer(instance)
+        if self.request.method == 'PATCH':
+            serializer = self.get_serializer(
+                instance, data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save(role=self.request.user.role)
+        return Response(serializer.data)
 
 @api_view(['POST'])
+@permission_classes([permissions.AllowAny])
 def user_create_view(request):
     serializer = CreateUserSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
@@ -38,6 +61,25 @@ def user_create_view(request):
               recipient_list=[email],
               from_email=None)
     return Response(serializer.data, status=HTTPStatus.OK)
+
+@api_view(['POST'])
+@permission_classes([permissions.AllowAny])
+def user_jwt_token_create_view(request):
+    serializer = UserJWTTokenCreateSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    confirmation_code = serializer.validated_data.get('confirmation_code')
+    username = serializer.validated_data.get('username')
+    user = get_object_or_404(User, username=username)
+    if default_token_generator.check_token(user, confirmation_code):
+        token = AccessToken.for_user(user)
+        return Response(
+            data={'token': str(token)},
+            status=HTTPStatus.OK
+        )
+    return Response(
+        'Неверный код подтверждения или имя пользователя!',
+        status=HTTPStatus.BAD_REQUEST
+    )
 
 class CategoryViewSet(CreateListDestroyViewSet):
     queryset = Category.objects.all()

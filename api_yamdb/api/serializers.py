@@ -18,6 +18,11 @@ class CreateUserSerializer(serializers.ModelSerializer):
         fields = ('username', 'email')
         model = User
 
+class UserJWTTokenCreateSerializer(serializers.Serializer):
+    confirmation_code = serializers.CharField(required=True)
+    username = serializers.CharField(required=True)
+
+
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
