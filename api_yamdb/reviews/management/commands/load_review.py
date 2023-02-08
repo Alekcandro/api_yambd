@@ -7,7 +7,7 @@ from reviews.models import Review
 
 DATA_EXISTS_IN_DATA_BASE = """
 Данные уже есть/загружены в БД! Если нужно загрузить их снова:
-1.Удалите файл db.sqlite3, 
+1.Удалите файл db.sqlite3,
 2.потом запустите команду 'python manage.py migrate'
 Пустая база данных будет создана.
 """
@@ -23,8 +23,8 @@ class Command(BaseCommand):
             return
 
         reviews = DictReader(open(
-                f'{settings.BASE_DIR}/static/data/review.csv',
-                encoding='utf-8'
+            f'{settings.BASE_DIR}/static/data/review.csv',
+            encoding='utf-8'
         ))
 
         for row in reviews:

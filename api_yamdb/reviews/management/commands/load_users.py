@@ -7,7 +7,7 @@ from users.models import User
 
 DATA_EXISTS_IN_DATA_BASE = """
 Данные уже есть/загружены в БД! Если нужно загрузить их снова:
-1.Удалите файл db.sqlite3, 
+1.Удалите файл db.sqlite3,
 2.потом запустите команду 'python manage.py migrate'
 Пустая база данных будет создана.
 """
