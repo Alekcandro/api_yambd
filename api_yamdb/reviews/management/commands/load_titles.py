@@ -24,8 +24,8 @@ class Command(BaseCommand):
 
         titles = DictReader(
             open(
-            f'{settings.BASE_DIR}/static/data/titles.csv',
-            encoding='utf-8'
+                f'{settings.BASE_DIR}/static/data/titles.csv',
+                encoding='utf-8'
             )
         )
 
