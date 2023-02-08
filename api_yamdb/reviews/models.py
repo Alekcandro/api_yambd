@@ -47,7 +47,8 @@ class Title(models.Model):
         verbose_name='Год выпуска',
         validators=[
             MinValueValidator(
-            0, message='Значение не может быть отрицательным.'
+                0, 
+                message='Значение не может быть отрицательным.'
             ),
             MaxValueValidator(
                 int(datetime.now().year),
