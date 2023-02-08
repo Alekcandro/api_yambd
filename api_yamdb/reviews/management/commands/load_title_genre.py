@@ -26,7 +26,7 @@ class Command(BaseCommand):
             open(
                 f'{settings.BASE_DIR}/static/data/genre_title.csv',
                 encoding='utf-8'
-            )        
+            )
         )
 
         for row in title_genres:
