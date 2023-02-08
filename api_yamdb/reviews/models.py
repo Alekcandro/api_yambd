@@ -101,6 +101,8 @@ class GenreTitle(models.Model):
 
 
 class Review(models.Model):
+    """Ревью на произведение."""
+
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
@@ -140,12 +142,20 @@ class Review(models.Model):
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
         ordering = ('-pub_date',)
+        constraints = [
+            models.UniqueConstraint(
+                fields=('title', 'author',),
+                name='unique_review_for_title'
+            )
+        ]
 
     def __str__(self):
         return self.text
 
 
 class Comment(models.Model):
+    """Коммент к определенному ревью."""
+
     review = models.ForeignKey(
         Review,
         on_delete=models.CASCADE,

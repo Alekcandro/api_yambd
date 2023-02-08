@@ -58,7 +58,7 @@ class TitleAdmin(admin.ModelAdmin):
 
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
-    """Настройка Произведений."""
+    """Настройка Ревью."""
 
     list_display = (
         'title',
@@ -69,7 +69,7 @@ class ReviewAdmin(admin.ModelAdmin):
 
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
-    """Настройка Произведений."""
+    """Настройка Комментов."""
 
     list_display = (
         'review',
