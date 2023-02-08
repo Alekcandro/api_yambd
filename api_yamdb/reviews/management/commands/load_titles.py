@@ -22,10 +22,12 @@ class Command(BaseCommand):
             print(DATA_EXISTS_IN_DATA_BASE)
             return
 
-        titles = DictReader(open(
+        titles = DictReader(
+            open(
             f'{settings.BASE_DIR}/static/data/titles.csv',
             encoding='utf-8'
-        ))
+            )
+        )
 
         for row in titles:
             title = Title(id=row['id'],
