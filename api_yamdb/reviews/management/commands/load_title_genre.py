@@ -22,9 +22,12 @@ class Command(BaseCommand):
             print(DATA_EXISTS_IN_DATA_BASE)
             return
 
-        title_genres = DictReader(open(
+        title_genres = DictReader(
+            open(
                 f'{settings.BASE_DIR}/static/data/genre_title.csv',
-                encoding='utf-8'))
+                encoding='utf-8'
+            )        
+        )
 
         for row in title_genres:
             title_genre = GenreTitle(id=row['id'],
