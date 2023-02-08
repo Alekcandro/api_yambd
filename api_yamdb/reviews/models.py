@@ -45,14 +45,15 @@ class Title(models.Model):
     )
     year = models.PositiveIntegerField(
         verbose_name='Год выпуска',
-        validators=[MinValueValidator(
+        validators=[
+            MinValueValidator(
             0,
             message='Значение не может быть отрицательным.'
-        ),
-            MaxValueValidator(
-                int(datetime.now().year),
-                message='Значение не может быть больше текущего года.'
-            )],
+            ),
+            MaxValueValidator(int(datetime.now().year),
+            message='Значение не может быть больше текущего года.'
+            )
+        ],
     )
     description = models.TextField(
         verbose_name='Описание',
