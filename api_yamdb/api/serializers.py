@@ -1,10 +1,12 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-
+from rest_framework.serializers import ValidationError
+from django.contrib.auth import get_user_model
+from django.db import IntegrityError
 from reviews.models import Category, Genre, Title, Review, Comment
-from users.models import User
 from .validators import validate_username
 
+User = get_user_model()
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -28,8 +30,10 @@ class TitleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Title
-        fields = ('id', 'name', 'year', 'description',
-                  'genre', 'category')
+        fields = (
+            'id', 'name', 'year', 'description',
+            'genre', 'category'
+        )
 
 
 class ReadTitleSerializer(serializers.ModelSerializer):
@@ -39,8 +43,10 @@ class ReadTitleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Title
-        fields = ('id', 'name', 'year', 'description',
-                  'genre', 'category', 'rating',)
+        fields = (
+            'id', 'name', 'year', 'description',
+        'genre', 'category', 'rating',
+        )
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -51,7 +57,8 @@ class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Review
         fields = (
-            'id', 'text', 'author', 'score', 'pub_date')
+            'id', 'text', 'author', 'score', 'pub_date'
+        )
 
     def validate(self, data):
         if not self.context.get('request').method == 'POST':
@@ -104,22 +111,39 @@ class UserSerializer(serializers.ModelSerializer):
         )
 
 
+
 class CreateUserSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
-        validators=(validate_username,
-                    UniqueValidator(queryset=User.objects.all()),),
+        validators=(
+            validate_username,
+
+        ),
         max_length=150,
         required=True
-
     )
     email = serializers.EmailField(
-        validators=(
-            UniqueValidator(queryset=User.objects.all()),
-        ),
+
         max_length=254,
         required=True
     )
 
     class Meta:
         model = User
-        fields = ("username", "email")
+        fields = ('username', 'email')
+
+    def validate(self, data):
+        username = data['username']
+        email = data[('email')]
+        try:
+            user, _ = User.objects.get_or_create(
+                username=username,
+                email=email
+            )
+            user.save()
+        except IntegrityError as error:
+            raise ValidationError(
+                ('Ошибка при попытке создать новую запись '
+                    f'в базе с username={username}, email={email}')
+            ) from error
+        user.save()
+        return data

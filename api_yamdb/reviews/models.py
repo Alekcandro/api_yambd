@@ -1,20 +1,21 @@
 from datetime import datetime
 
-from django.core.validators import (RegexValidator, MinValueValidator,
-                                    MaxValueValidator)
+from django.contrib.auth import get_user_model
+from django.core.validators import (
+    RegexValidator, MinValueValidator,
+    MaxValueValidator
+)
 from django.db import models
 
-from users.models import User
+from .validators import validate_actual_year
+
+User = get_user_model()
 
 
 class CategoryGenreBase(models.Model):
     """Абстрактная модель для Category and Genre."""
     name = models.CharField(max_length=256)
-    slug = models.SlugField(unique=True, max_length=50,
-                            validators=[RegexValidator(
-                                regex=r'^[-a-zA-Z0-9_]+$',
-                                message='Слаг содержит недопустимый символ.'
-                            )])
+    slug = models.SlugField(unique=True, max_length=50)
 
     class Meta:
         abstract = True
@@ -45,16 +46,7 @@ class Title(models.Model):
     )
     year = models.PositiveIntegerField(
         verbose_name='Год выпуска',
-        validators=[
-            MinValueValidator(
-                0,
-                message='Значение не может быть отрицательным.'
-            ),
-            MaxValueValidator(
-                int(datetime.now().year),
-                message='Значение не может быть больше текущего года.'
-            )
-        ],
+        validators=[validate_actual_year]
     )
     description = models.TextField(
         verbose_name='Описание',

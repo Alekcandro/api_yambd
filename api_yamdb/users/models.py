@@ -33,9 +33,11 @@ class User(AbstractUser):
         max_length=150,
         blank=True
     )
-    role = models.CharField(max_length=30,
-                            choices=USER_ROLES,
-                            default='user')
+    role = models.CharField(
+        max_length=30,
+        choices=USER_ROLES,
+        default='user'
+    )
 
     confirmation_code = models.CharField(
         max_length=150,
@@ -48,7 +50,7 @@ class User(AbstractUser):
 
     @property
     def is_admin(self):
-        return self.role == User.ADMIN or self.is_superuser
+        return self.role == self.ADMIN or self.is_superuser
 
     @property
     def is_moderator(self):
