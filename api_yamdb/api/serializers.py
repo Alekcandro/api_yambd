@@ -8,6 +8,7 @@ from .validators import validate_username
 
 User = get_user_model()
 
+
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
@@ -45,7 +46,7 @@ class ReadTitleSerializer(serializers.ModelSerializer):
         model = Title
         fields = (
             'id', 'name', 'year', 'description',
-        'genre', 'category', 'rating',
+            'genre', 'category', 'rating',
         )
 
 
@@ -111,12 +112,10 @@ class UserSerializer(serializers.ModelSerializer):
         )
 
 
-
 class CreateUserSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
         validators=(
-            validate_username,
-
+            validate_username
         ),
         max_length=150,
         required=True

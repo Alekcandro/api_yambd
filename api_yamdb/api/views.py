@@ -115,7 +115,9 @@ class APIGetToken(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        if data.get('confirmation_code') == default_token_generator.check_token:
+        if data.get(
+            'confirmation_code'
+        ) == default_token_generator.check_token:
             token = RefreshToken.for_user(user).access_token
             return Response(
                 {'token': str(token)},
@@ -131,7 +133,7 @@ class APIGetToken(APIView):
 def user_create_view(request):
     email = request.data.get('email')
     username = request.data.get('username')
-    #if  User.objects.filter(username=username).exists():
+    # if  User.objects.filter(username=username).exists():
     #    send_confirmation_code(username)
     #  return Response(status=status.HTTP_200_OK)
     # реализация возможности повторной отправки кода (нового)
@@ -140,6 +142,7 @@ def user_create_view(request):
     serializer.is_valid(raise_exception=True)
     send_confirmation_code(username, email)
     return Response(serializer.data, status=HTTPStatus.OK)
+
 
 def send_confirmation_code(username, email):
     user = get_object_or_404(User, email=email, username=username)

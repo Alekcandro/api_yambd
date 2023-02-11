@@ -6,5 +6,5 @@ class CreateListDestroyViewSet(
     mixins.ListModelMixin,
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet
-    ):
+):
     pass
