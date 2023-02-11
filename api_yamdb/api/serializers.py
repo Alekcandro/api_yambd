@@ -115,7 +115,7 @@ class UserSerializer(serializers.ModelSerializer):
 class CreateUserSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
         validators=(
-            validate_username
+            validate_username,
         ),
         max_length=150,
         required=True
