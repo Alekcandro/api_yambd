@@ -1,8 +1,6 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from rest_framework.serializers import ValidationError
 from django.contrib.auth import get_user_model
-from django.db import IntegrityError
 from reviews.models import Category, Genre, Title, Review, Comment
 from .validators import validate_username
 
@@ -120,7 +118,7 @@ class CreateUserSerializer(serializers.ModelSerializer):
         ),
         max_length=150,
         required=True
-        )
+    )
     email = serializers.EmailField(
         validators=(
             UniqueValidator(queryset=User.objects.all()),
