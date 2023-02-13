@@ -115,13 +115,16 @@ class UserSerializer(serializers.ModelSerializer):
 class CreateUserSerializer(serializers.ModelSerializer):
     username = serializers.CharField(
         validators=(
-            validate_username
+            validate_username,
+            UniqueValidator(queryset=User.objects.all()),
         ),
         max_length=150,
         required=True
     )
     email = serializers.EmailField(
-
+        validators=(
+            UniqueValidator(queryset=User.objects.all()),
+        ),
         max_length=254,
         required=True
     )
@@ -129,20 +132,3 @@ class CreateUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('username', 'email')
-
-    def validate(self, data):
-        username = data['username']
-        email = data[('email')]
-        try:
-            user, _ = User.objects.get_or_create(
-                username=username,
-                email=email
-            )
-            user.save()
-        except IntegrityError as error:
-            raise ValidationError(
-                ('Ошибка при попытке создать новую запись '
-                    f'в базе с username={username}, email={email}')
-            ) from error
-        user.save()
-        return data

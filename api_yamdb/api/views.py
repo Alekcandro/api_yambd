@@ -1,5 +1,6 @@
 from http import HTTPStatus
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
@@ -83,11 +84,8 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def _get_review(self):
         review_id = self.kwargs.get('review_id')
-        return get_object_or_404(Review, pk=review_id)
-
-    def get_title(self):
         title_id = self.kwargs.get('title_id')
-        return get_object_or_404(Title, pk=title_id)
+        return get_object_or_404(Review, pk=review_id, title=title_id)
 
     def get_queryset(self):
         return self._get_review().comments.all()
@@ -115,9 +113,9 @@ class APIGetToken(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        if data.get(
-            'confirmation_code'
-        ) == default_token_generator.check_token:
+        if data.get('confirmation_code') == (
+            default_token_generator.check_token
+        ):
             token = RefreshToken.for_user(user).access_token
             return Response(
                 {'token': str(token)},
@@ -133,13 +131,12 @@ class APIGetToken(APIView):
 def user_create_view(request):
     email = request.data.get('email')
     username = request.data.get('username')
-    # if  User.objects.filter(username=username).exists():
-    #    send_confirmation_code(username)
-    #  return Response(status=status.HTTP_200_OK)
-    # реализация возможности повторной отправки кода (нового)
-    # валит сразу 3 теста, хотя в деле работает
+    if User.objects.filter(username=username, email=email).exists():
+        send_confirmation_code(username, email)
+        return Response(request.data, status=status.HTTP_200_OK)
     serializer = CreateUserSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
+    serializer.save()
     send_confirmation_code(username, email)
     return Response(serializer.data, status=HTTPStatus.OK)
 
@@ -156,7 +153,7 @@ def send_confirmation_code(username, email):
         message=MESSAGE,
         subject='Confirmation code',
         recipient_list=[user.email],
-        from_email='admin@yatube.com'
+        from_email=settings.DEFAULT_FROM_EMAIL,
     )
     user.save()
 
