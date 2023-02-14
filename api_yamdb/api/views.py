@@ -104,18 +104,16 @@ class APIGetToken(APIView):
         serializer = GetTokenSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
-
         try:
             user = User.objects.get(username=data['username'])
+            confirmation_code = data['confirmation_code']
         except User.DoesNotExist:
             return Response(
                 {'username': 'Пользователя не существует'},
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        if data.get('confirmation_code') == (
-            default_token_generator.check_token
-        ):
+        if default_token_generator.check_token(user, confirmation_code):
             token = RefreshToken.for_user(user).access_token
             return Response(
                 {'token': str(token)},
